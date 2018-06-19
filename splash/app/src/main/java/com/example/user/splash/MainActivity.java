@@ -20,6 +20,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -187,17 +188,28 @@ public class MainActivity extends AppCompatActivity {
                                             MainActivity.this.runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    //Handle UI here
-                                                    JSONObject nextBus2 = reader.getJSONObjectx(“nextBus2”);
-                                                    String estArrival = nextBus2.getString(“EstimatedArrival”);
-                                                    //DateFormat inputDF = DateFormat.getDateInstance("'Bus 158 arriving on' yyyy/MM/dd 'on' EEE, 'at' HH:mm:ss");
-                                                    SimpleDateFormat format = new SimpleDateFormat("'Bus 158 arriving on' yyyy/MM/dd 'on' EEE, 'at' HH:mm:ss");
-                                                    //Date myDate = inputDF.parse(estArrival);
-                                                    Date date = format.parse(estArrival);
-                                                    //DateFormat outputDF = DateFormat.getDateInstance("'Bus 158 arriving on' yyyy/MM/dd 'on' EEE, 'at' HH:mm:ss");
-                                                    //String timeStr = outputDF.format(myDate);
-                                                    ((TextView) findViewById(R.id.busStatus)).setText(date);
-                                                    //((TextView) findViewById(R.id.busStatus)).setText(a);
+                                                    try {
+                                                        //Handle UI here
+                                                        System.out.println(a);
+                                                        JSONObject reader = new JSONObject(a);
+
+                                                        JSONArray services = reader.getJSONArray("Services");
+                                                        JSONObject service = services.getJSONObject(0);
+
+                                                        JSONObject nextBus = service.getJSONObject("NextBus");
+                                                        String estArrival = nextBus.getString("EstimatedArrival");
+                                                        System.out.println(estArrival);
+                                                        DateFormat inputDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                                        Date date = inputDF.parse(estArrival);
+                                                        System.out.println(date.toString());
+                                                        SimpleDateFormat outFormat = new SimpleDateFormat("'Bus 158 arriving on' yyyy/MM/dd 'on' EEE, 'at' HH:mm:ss");
+
+                                                        String timeStr = outFormat.format(date);
+                                                        ((TextView) findViewById(R.id.busStatus)).setText(timeStr);
+                                                        //((TextView) findViewById(R.id.busStatus)).setText(a);
+                                                    } catch(Exception e) {
+                                                        System.out.println(e.toString());
+                                                    }
                                                 }
                                             });
                                         }
